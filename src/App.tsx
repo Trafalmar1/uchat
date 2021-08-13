@@ -1,23 +1,50 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import "./styles/App.scss";
+
+import firebase from "firebase/app";
+import "firebase/firestore";
+import "firebase/auth";
+import "firebase/analytics";
+import { useAuthState } from "react-firebase-hooks/auth";
+
+import SignIn from "./components/SignIn";
+import SignOut from "./components/SignOut";
+import Chat from "./components/Chat";
+import { createContext } from "react";
+
+import { firebaseConfig } from "./firebaseConfig";
+
+import classes from "./styles/Chat.module.scss";
+
+firebase.initializeApp(firebaseConfig);
+
+const auth = firebase.auth();
+const firestore = firebase.firestore();
+const analytics = firebase.analytics();
+
+const contextConfig = {
+  auth,
+  firestore,
+  firebase,
+  analytics,
+};
+export const FireContext = createContext(contextConfig);
 
 function App() {
+  const [user] = useAuthState(auth);
+
   return (
     <div className="App">
       <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
+        <FireContext.Provider value={contextConfig}>
+          {!user ? (
+            <SignIn />
+          ) : (
+            <div className={classes.ChatWrapper}>
+              <SignOut />
+              <Chat />
+            </div>
+          )}
+        </FireContext.Provider>
       </header>
     </div>
   );

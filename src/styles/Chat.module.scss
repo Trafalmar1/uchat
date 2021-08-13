@@ -1,0 +1,116 @@
+.ChatWrapper {
+  display: grid;
+  grid-template-rows: 10rem calc(100vh - 10rem);
+  grid-template-columns: 100vw;
+  place-items: center;
+}
+
+.Chat {
+  position: relative;
+  display: grid;
+  grid-template-rows: 1fr;
+  align-items: end;
+  height: 90%;
+  max-width: 50rem;
+  width: calc(100% - 3rem);
+  overflow: hidden;
+}
+
+.FormControls {
+  display: grid;
+  grid-template-columns: 1fr minmax(7rem, 30%);
+}
+
+// Input
+
+.Input {
+  border: none;
+  border: 0.1rem solid rgba(0, 0, 0, 0.4);
+  border-right: none;
+  border-radius: 0;
+  padding: 1rem 1.5rem;
+  font-size: 1.6rem;
+  outline: none;
+}
+
+// Button
+
+.SendButton {
+  border: none;
+  background-color: royalblue;
+  border-radius: 0;
+  padding: 1rem 1.5rem;
+  font-size: 1.6rem;
+  outline: none;
+
+  color: white;
+  letter-spacing: 0.05rem;
+  font-weight: 600;
+}
+
+.SendButton:hover {
+  cursor: pointer;
+  filter: brightness(1.2);
+}
+
+// Messages
+
+.Messages {
+  position: unset;
+  display: flex;
+  flex-direction: column;
+  overflow: auto;
+  width: 100%;
+  padding: 0 1rem;
+}
+
+$gap: 1rem;
+
+.Message {
+  display: grid;
+  grid-template-columns: 1fr 6rem;
+  grid-template-rows: 1fr;
+  margin: $gap 0;
+  place-items: center;
+  justify-items: end;
+  p {
+    display: block;
+    text-align: left;
+    background-color: rgb(196, 211, 255);
+    max-width: 30rem;
+    padding: 1rem 2rem;
+    border-radius: 1rem;
+    font-size: 2rem;
+    grid-column: 1/2;
+    grid-row: 1/2;
+    margin: 0 2rem 0 0;
+  }
+  img {
+    height: 6rem;
+    width: 6rem;
+    border-radius: 6rem;
+    grid-column: 2/3;
+    align-self: end;
+  }
+}
+
+.Received {
+  grid-template-columns: 6rem 1fr;
+  //   margin: $gap auto $gap 0;
+  justify-items: start;
+  p {
+    grid-column: 2/3;
+    background-color: rgb(234, 239, 255);
+    margin: 0 0 0 2rem;
+    text-align: right;
+  }
+  img {
+    grid-column: 1/2;
+  }
+}
+
+@media all and (max-width: 420px) {
+  p {
+    max-width: 90% !important;
+  }
+}
