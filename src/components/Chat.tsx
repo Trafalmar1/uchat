@@ -1,24 +1,36 @@
-import React from "react";
+import React, { useState } from "react";
 import { useRef } from "react";
 import { useEffect } from "react";
-import { FC, useContext, useState } from "react";
+import { FC, useContext } from "react";
 import { useCollectionData } from "react-firebase-hooks/firestore";
-import { FireContext } from "../App";
+import { FireContext } from "App";
+import TextArea from "components/TextArea";
 
-import classes from "../styles/Chat.module.scss";
+import classes from "styles/Chat/Chat.module.scss";
+import { Fragment } from "react";
 
-interface MsgProps {
-  message: { text: string; uid: string; photoURL: string };
-}
+export type Message = {
+  text: string;
+  createdAt: Date;
+  uid: string;
+  photoURL: string;
+  id: string;
+};
 
-const ChatMessage: FC<MsgProps> = ({ message }) => {
+const ChatMessage: FC<Message> = ({ text, uid, photoURL, id }) => {
   const { auth } = useContext(FireContext);
-  const { text, uid, photoURL } = message;
 
   const messageClass = uid === auth?.currentUser?.uid ? "" : classes.Received;
   return (
     <div className={`${classes.Message} ${messageClass}`}>
-      <p>{text}</p>
+      <p>
+        {text.split("\\n").map((text, index) => (
+          <Fragment key={id + text + index}>
+            {text}
+            <br />
+          </Fragment>
+        ))}
+      </p>
       <img src={photoURL} alt="avatar" />
     </div>
   );
@@ -27,51 +39,57 @@ const ChatMessage: FC<MsgProps> = ({ message }) => {
 const Chat: FC = () => {
   const { firestore, auth, firebase } = useContext(FireContext);
   const messagesRef = firestore.collection("messages");
-  const query = messagesRef.orderBy("createdAt").limit(25);
-  const [messages] = useCollectionData(query);
+  const query = messagesRef.orderBy("createdAt");
+  const [messages] = useCollectionData<any>(query, { idField: "id" });
+  const [loaded, setLoaded] = useState<boolean>(false);
   const [formValue, setFormValue] = useState<string>("");
   const bottomDiv = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    bottomDiv.current?.scrollIntoView({ behavior: "smooth" });
-  }, [messages]);
+    if (messages && !loaded) {
+      bottomDiv.current?.scrollIntoView();
+      setLoaded(true);
+    } else {
+      bottomDiv.current?.scrollIntoView({ behavior: "smooth" });
+    }
+  }, [messages, loaded]);
 
-  const textInputHandler = (e: React.FormEvent<HTMLInputElement>) => {
-    setFormValue(e.currentTarget.value);
-  };
-
-  const sendMessage = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const sendMessage = async () => {
     const { uid, photoURL } = auth.currentUser as {
       uid: string;
       photoURL: string;
     };
+
     if (formValue.trim() === "") return;
+    const input = formValue.trim().replaceAll("\n", "\\n");
+    setFormValue("");
+
     await messagesRef.add({
-      text: formValue,
+      text: input,
       createdAt: firebase.firestore.FieldValue.serverTimestamp(),
       uid,
       photoURL,
     });
     bottomDiv.current?.scrollIntoView({ behavior: "smooth" });
-    setFormValue("");
+  };
+
+  const submitHandler = async (e: React.FormEvent) => {
+    e.preventDefault();
+    sendMessage();
   };
 
   return (
     <div className={classes.Chat}>
       <div className={classes.Messages}>
         {!!messages &&
-          messages.map((msg: any) => (
-            <ChatMessage key={msg.createdAt} message={msg} />
-          ))}
+          messages.map((msg: Message) => <ChatMessage key={msg.id} {...msg} />)}
         <div ref={bottomDiv} />
       </div>
-      <form onSubmit={sendMessage} className={classes.FormControls}>
-        <input
-          className={classes.Input}
-          placeholder={"Write a message..."}
+      <form onSubmit={submitHandler} className={classes.FormControls}>
+        <TextArea
+          setValue={setFormValue}
           value={formValue}
-          onChange={textInputHandler}
+          onKeyPress={sendMessage}
         />
         <button className={classes.SendButton} type={"submit"}>
           Send

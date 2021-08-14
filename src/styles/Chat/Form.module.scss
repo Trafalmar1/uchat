@@ -1,0 +1,36 @@
+@import "styles/sizes.scss";
+
+.FormControls {
+  display: grid;
+  grid-template-columns: 1fr minmax(7rem, 30%);
+}
+
+.Input {
+  border: none;
+  border: 0.1rem solid rgba(0, 0, 0, 0.1);
+  border-right: none;
+  border-radius: 0;
+  padding: 1.5rem 1.5rem;
+  font-size: 1.6rem;
+  outline: none;
+  resize: none;
+  line-height: 2.4rem;
+}
+
+.SendButton {
+  border: none;
+  background-color: royalblue;
+  border-radius: 0;
+  padding: 1rem 1.5rem;
+  font-size: 1.6rem;
+  outline: none;
+
+  color: white;
+  letter-spacing: 0.05rem;
+  font-weight: 600;
+}
+
+.SendButton:hover {
+  cursor: pointer;
+  filter: brightness(1.2);
+}

@@ -1,4 +1,4 @@
-import "./styles/App.scss";
+import "styles/App.scss";
 
 import firebase from "firebase/app";
 import "firebase/firestore";
@@ -6,14 +6,13 @@ import "firebase/auth";
 import "firebase/analytics";
 import { useAuthState } from "react-firebase-hooks/auth";
 
-import SignIn from "./components/SignIn";
-import SignOut from "./components/SignOut";
-import Chat from "./components/Chat";
+import { SignIn, SignOut } from "components/Authentication";
+import Chat from "components/Chat";
 import { createContext } from "react";
 
-import { firebaseConfig } from "./firebaseConfig";
+import { firebaseConfig } from "firebaseConfig";
 
-import classes from "./styles/Chat.module.scss";
+import classes from "styles/Chat/Chat.module.scss";
 
 firebase.initializeApp(firebaseConfig);
 
